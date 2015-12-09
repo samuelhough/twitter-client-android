@@ -26,6 +26,6 @@ Advanced: User can select "reply" from detail view to respond to a tweet
 Incomplete - Advanced: Improve the user interface and theme the app to feel "twitter branded"
 
 
-![Video Walkthrough](https://github.com/samuelhough/insta-android/blob/master/gifs/Twitter1.gif)
+![Video Walkthrough](https://github.com/samuelhough/twitter-client-android/blob/master/gifs/Twitter1.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
