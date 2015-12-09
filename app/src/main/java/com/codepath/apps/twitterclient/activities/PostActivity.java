@@ -23,6 +23,7 @@ public class PostActivity extends AppCompatActivity {
     TwitterClient client;
     TextView tvCharCount;
     long replyId;
+    int charCount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +44,9 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-                int val = 140 - etEditTweet.getText().toString().length();
+                charCount = 140 - etEditTweet.getText().toString().length();
 
-                tvCharCount.setText(Integer.toString(val));
+                tvCharCount.setText(Integer.toString(charCount));
 
                 return false;
             }
@@ -60,6 +61,10 @@ public class PostActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String tweet = etEditTweet.getText().toString();
                 btnPostTweet.setVisibility(View.INVISIBLE);
+                if (charCount <= 0){
+                   return;
+                }
+
                 client.postTweet(tweet, replyId, new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
