@@ -53,14 +53,14 @@ public class TimelineActivity extends AppCompatActivity {
         setupRefreshTimeline();
 
 
-        List<TweetModel> savedTweets = TweetModel.getAll();
-        if (savedTweets.size() > 0){
-            System.out.println(Integer.toString(savedTweets.size())+ " loaded");
-            tweets.addAll(savedTweets);
-            tweetsAdapeter.notifyDataSetChanged();
-        } else {
-            fetchData();
-        }
+//        List<TweetModel> savedTweets = TweetModel.getAll();
+//        if (savedTweets.size() > 0){
+//            System.out.println(Integer.toString(savedTweets.size())+ " loaded");
+//            tweets.addAll(savedTweets);
+//            tweetsAdapeter.notifyDataSetChanged();
+//        } else {
+        fetchData(true);
+//        }
 
     }
 
@@ -68,7 +68,7 @@ public class TimelineActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                fetchData();
+                fetchData(true);
             }
         });
     }
@@ -99,12 +99,17 @@ public class TimelineActivity extends AppCompatActivity {
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(manager) {
 
             public void onLoadMore(int page, int totalItemsCount) {
-                fetchData();
+                fetchData(false);
             }
         });
     }
 
-    private void fetchData(){
+    private void fetchData(boolean clear){
+        if(clear){
+            tweets.clear();
+            tweetsAdapeter.notifyDataSetChanged();
+        }
+
         long maxId;
         TweetModel tweet = tweetsAdapeter.getLastTweet();
         if (tweet != null) {
