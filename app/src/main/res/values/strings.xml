@@ -4,7 +4,8 @@
     <string name="app_name">Twitter Client</string>
     <string name="login_label">Connect to Twitter</string>
     <string name="title_activity_timeline">Home Timeline</string>
-    <string name="post_to_timeline">Post to Timeline</string>
+    <string name="post_to_timeline">Post</string>
     <string name="submit_tweet">Post Tweet</string>
+    <string name="post_hint">Whats on your mind?</string>
     <string name="username_font"></string>
 </resources>

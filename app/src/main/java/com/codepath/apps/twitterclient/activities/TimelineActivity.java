@@ -2,6 +2,7 @@ package com.codepath.apps.twitterclient.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.activeandroid.ActiveAndroid;
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.RestApplication;
 import com.codepath.apps.twitterclient.TwitterClient;
@@ -22,6 +24,7 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TimelineActivity extends AppCompatActivity {
 
@@ -30,6 +33,7 @@ public class TimelineActivity extends AppCompatActivity {
     private ArrayList<TweetModel> tweets;
     private Toolbar toolbar;
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +47,36 @@ public class TimelineActivity extends AppCompatActivity {
 
         tweets = new ArrayList<>();
         tweetsAdapeter = new TweetsArrayAdapter(tweets);
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshTimeline);
+
         setupRecyclerView();
-        fetchData(-1);
+        setupRefreshTimeline();
+
+
+        List<TweetModel> savedTweets = TweetModel.getAll();
+        if (savedTweets.size() > 0){
+            System.out.println(Integer.toString(savedTweets.size())+ " loaded");
+            tweets.addAll(savedTweets);
+            tweetsAdapeter.notifyDataSetChanged();
+        } else {
+            fetchData();
+        }
 
     }
 
+    private void setupRefreshTimeline(){
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchData();
+            }
+        });
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = new MenuInflater(getApplicationContext());
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.logged_in_toolbar, menu);
 
         return true;
@@ -73,22 +99,53 @@ public class TimelineActivity extends AppCompatActivity {
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(manager) {
 
             public void onLoadMore(int page, int totalItemsCount) {
-                TweetModel tweet = tweetsAdapeter.getLastTweet();
-                if (tweet != null) {
-                    fetchData(tweet.TweetId());
-                }
+                fetchData();
             }
         });
     }
 
-    private void fetchData(long maxId){
-        client.getHomeTimeline(new JsonHttpResponseHandler(){
+    private void fetchData(){
+        long maxId;
+        TweetModel tweet = tweetsAdapeter.getLastTweet();
+        if (tweet != null) {
+            maxId = tweet.TweetId();
+        } else {
+            maxId = -1;
+        }
+
+        client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-                tweets.addAll(TweetModel.fromJSONArray(response));
+                List<TweetModel> newTweets = TweetModel.fromJSONArray(response);
+                tweets.addAll(newTweets);
+
+                saveTweets(newTweets);
+
                 tweetsAdapeter.notifyDataSetChanged();
+                swipeContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                swipeContainer.setRefreshing(false);
             }
         }, maxId);
+    }
+
+    public void saveTweets(List<TweetModel> newTweets){
+        ActiveAndroid.beginTransaction();
+
+        try {
+            int count = newTweets.size();
+            for (int cur = 0; cur < count; cur++) {
+                newTweets.get(cur).saveWithDependencies();
+            }
+            ActiveAndroid.setTransactionSuccessful();
+        } finally {
+            ActiveAndroid.endTransaction();
+        }
+
+
     }
 }

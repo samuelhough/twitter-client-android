@@ -2,6 +2,7 @@ package com.codepath.apps.twitterclient.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +36,14 @@ public class PostActivity extends AppCompatActivity {
 
         replyId = getIntent().getLongExtra("replyId", -1);
         tvCharCount = (TextView) findViewById(R.id.tvCharCount);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.submit_tweet);
+
+        etEditTweet.requestFocus();
+
+        setSupportActionBar(toolbar);
+
         setupButton();
         setupTypeHandler();
     }
@@ -70,6 +79,7 @@ public class PostActivity extends AppCompatActivity {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         System.out.println("Success");
                         super.onSuccess(statusCode, headers, response);
+
                         finish();
                     }
 
