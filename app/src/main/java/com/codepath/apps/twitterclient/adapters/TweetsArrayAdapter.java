@@ -1,7 +1,12 @@
 package com.codepath.apps.twitterclient.adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +32,16 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
     TwitterClient client = RestApplication.getRestClient();
     public class TweetsViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProfileImage;
-        TextView tvUsername;
         TextView tvTweet;
         TextView tvCreatedAt;
+        TextView tvNameAndUsername;
         public TweetsViewHolder(View view){
             super(view);
 
             ivProfileImage = (ImageView) view.findViewById(R.id.ivProfilePhoto);
-            tvUsername = (TextView) view.findViewById(R.id.tvUsername);
             tvTweet = (TextView) view.findViewById(R.id.tvTweet);
             tvCreatedAt = (TextView) view.findViewById(R.id.tvRelativeTime);
+            tvNameAndUsername = (TextView) view.findViewById(R.id.tvNameAndUsername);
         }
     }
 
@@ -51,20 +56,53 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
 
         Picasso.with(holder.itemView.getContext())
                 .load(tweet.getUser().getProfileImageUrl())
+                .transform(Util.getRoundCornerTransform())
                 .into(holder.ivProfileImage);
 
-        holder.tvUsername.setText(tweet.getUser().getScreenName());
         holder.tvTweet.setText(tweet.getBody());
         holder.tvCreatedAt.setText(Util.getRelativeTimeAgo(tweet.getCreatedAt()));
-        holder.itemView.setOnClickListener(new View.OnClickListener(){
+
+        setNameAndUsername(holder.tvNameAndUsername,
+                tweet.getUser().getName(),
+                tweet.getUser().getScreenName());
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 long tweetid = tweet.TweetId();
                 Intent i = new Intent(holder.itemView.getContext(), PostActivity.class);
                 i.putExtra("replyid", tweetid);
                 holder.itemView.getContext().startActivity(i);
+                return true;
             }
         });
+    }
+
+    private void setNameAndUsername(TextView textView, String name, String username){
+        Context c = textView.getContext();
+
+        ForegroundColorSpan grayTextForegroundSpan = new ForegroundColorSpan(
+                c.getResources().getColor(R.color.name_gray)
+        );
+
+        AbsoluteSizeSpan fontsizeSpan = new AbsoluteSizeSpan(20);
+
+        SpannableStringBuilder ssb = new SpannableStringBuilder(name + " @" + username);
+
+        // Apply the color span
+        ssb.setSpan(
+                grayTextForegroundSpan,            // the span to add
+                name.length() + 1,                                 // the start of the span (inclusive)
+                ssb.length(),                      // the end of the span (exclusive)
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // behavior when text is later inserted into the SpannableStringBuilder
+
+        ssb.setSpan(
+                fontsizeSpan,            // the span to add
+                name.length() + 1,                                 // the start of the span (inclusive)
+                ssb.length(),                      // the end of the span (exclusive)
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textView.setText(ssb);
     }
 
     public TweetModel getLastTweet(){

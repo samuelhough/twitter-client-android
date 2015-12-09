@@ -2,9 +2,11 @@ package com.codepath.apps.twitterclient.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.RestApplication;
@@ -19,6 +21,7 @@ public class PostActivity extends AppCompatActivity {
     Button btnPostTweet;
     EditText etEditTweet;
     TwitterClient client;
+    TextView tvCharCount;
     long replyId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,25 @@ public class PostActivity extends AppCompatActivity {
         etEditTweet = (EditText) findViewById(R.id.etEditTweet);
 
         replyId = getIntent().getLongExtra("replyId", -1);
+        tvCharCount = (TextView) findViewById(R.id.tvCharCount);
         setupButton();
+        setupTypeHandler();
+    }
+
+    private void setupTypeHandler(){
+        etEditTweet.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                int val = 140 - etEditTweet.getText().toString().length();
+
+                tvCharCount.setText(Integer.toString(val));
+
+                return false;
+            }
+        });
+
+
     }
 
     private void setupButton(){

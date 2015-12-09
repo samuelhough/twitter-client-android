@@ -3,6 +3,9 @@ package com.codepath.apps.twitterclient.utils;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Transformation;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -62,5 +65,13 @@ public class Util {
         }
         return jsonBlob;
 
+    }
+
+    public static Transformation getRoundCornerTransform(){
+         Transformation transformation = new RoundedTransformationBuilder()
+                .cornerRadiusDp(4)
+                .oval(false)
+                .build();
+        return transformation;
     }
 }

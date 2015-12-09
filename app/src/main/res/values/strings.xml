@@ -6,4 +6,5 @@
     <string name="title_activity_timeline">Home Timeline</string>
     <string name="post_to_timeline">Post to Timeline</string>
     <string name="submit_tweet">Post Tweet</string>
+    <string name="username_font"></string>
 </resources>
