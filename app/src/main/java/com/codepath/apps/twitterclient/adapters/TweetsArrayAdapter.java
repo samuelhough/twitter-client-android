@@ -9,8 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.twitterclient.R;
-import com.codepath.apps.twitterclient.RestApplication;
-import com.codepath.apps.twitterclient.TwitterClient;
 import com.codepath.apps.twitterclient.activities.DetailTweet;
 import com.codepath.apps.twitterclient.activities.PostActivity;
 import com.codepath.apps.twitterclient.models.TweetModel;
@@ -26,7 +24,6 @@ import java.util.List;
  */
 public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.TweetsViewHolder>{
 
-    TwitterClient client = RestApplication.getRestClient();
     public class TweetsViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProfileImage;
         TextView tvTweet;
@@ -95,18 +92,13 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
 
     @Override
     public int getItemCount() {
+        System.out.println(Integer.toString(tweets.size()));
         return tweets.size();
-    }
-
-    public void addAllTweets(List<TweetModel> tweetList){
-        tweets.addAll(tweetList);
-        notifyDataSetChanged();
     }
 
     @Override
     public TweetsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View convertView = (View) LayoutInflater.from(parent.getContext()).inflate(R.layout.tweet_layout, parent, false);
-        TweetsViewHolder tweetHolder = new TweetsViewHolder(convertView);
-        return tweetHolder;
+        View convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.tweet_layout, parent, false);
+        return new TweetsViewHolder(convertView);
     }
 }
