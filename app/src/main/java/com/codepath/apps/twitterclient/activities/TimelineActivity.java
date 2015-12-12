@@ -1,30 +1,19 @@
 package com.codepath.apps.twitterclient.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.codepath.apps.twitterclient.R;
-import com.codepath.apps.twitterclient.TwitterClient;
 import com.codepath.apps.twitterclient.adapters.HomeFragmentStatePagerAdapter;
-import com.codepath.apps.twitterclient.adapters.TweetsArrayAdapter;
-import com.codepath.apps.twitterclient.models.TweetModel;
-
-import java.util.ArrayList;
 
 public class TimelineActivity extends AppCompatActivity {
 
-    private TwitterClient client;
-    private TweetsArrayAdapter tweetsAdapeter;
-    private ArrayList<TweetModel> tweets;
     private Toolbar toolbar;
-    private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout swipeContainer;
-
     private HomeFragmentStatePagerAdapter homeAdapter;
     private ViewPager viewPager;
 
@@ -43,6 +32,11 @@ public class TimelineActivity extends AppCompatActivity {
         TabLayout tablayout = (TabLayout) findViewById(R.id.tabs);
         tablayout.setupWithViewPager(viewPager);
 
+    }
+
+    public void onProfileView(MenuItem mi){
+        Intent i = new Intent(this, ProfileActivity.class);
+        startActivity(i);
     }
 
 }

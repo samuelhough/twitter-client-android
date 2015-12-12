@@ -7,6 +7,13 @@ import android.view.ViewGroup;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.adapters.HomeFragmentStatePagerAdapter;
+import com.codepath.apps.twitterclient.models.TweetModel;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+
+import java.util.List;
 
 public class MentionsFragment extends BaseTimelineFragment implements HomeFragmentStatePagerAdapter.FragmentInfo {
 
@@ -17,7 +24,7 @@ public class MentionsFragment extends BaseTimelineFragment implements HomeFragme
 
     @Override
     public String getFragmentTitle() {
-        return "Mentions";
+        return "@Mentions";
     }
 
     @Override
@@ -41,5 +48,17 @@ public class MentionsFragment extends BaseTimelineFragment implements HomeFragme
     @Override
     public int getRecyclerId() {
         return R.id.rvTweetsMentions;
+    }
+
+    public void makeRequest(long maxId) {
+        System.out.println("food");
+        mClient.getUserMentions(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+                List<TweetModel> tweets = parseTimelineResponse(response);
+            }
+
+        }, maxId);
     }
 }

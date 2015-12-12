@@ -33,7 +33,7 @@ import java.util.List;
 
 public abstract class BaseTimelineFragment extends Fragment implements HomeFragmentStatePagerAdapter.FragmentInfo {
 
-    private TwitterClient mClient;
+    protected TwitterClient mClient;
     private TweetsArrayAdapter mTweetsAdapeter;
     private SwipeRefreshLayout mSwipeContainer;
     private ArrayList<TweetModel> mTweets;
@@ -42,9 +42,13 @@ public abstract class BaseTimelineFragment extends Fragment implements HomeFragm
 
     public BaseTimelineFragment() {}
     public abstract View createFragView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
-    public abstract String getFragmentTitle();
     public abstract int getRecyclerId();
     public abstract int getSwipeContainerId();
+
+    @Override
+    public String getFragmentTitle() {
+        return null;
+    }
 
     @Override
     public View onCreateView(
@@ -67,14 +71,14 @@ public abstract class BaseTimelineFragment extends Fragment implements HomeFragm
         setupRefreshTimeline();
 
 
-        List<TweetModel> savedTweets = TweetModel.getAll();
-        if (savedTweets.size() > 0){
-            System.out.println(Integer.toString(savedTweets.size())+ " loaded");
-            mTweets.addAll(savedTweets);
-            mTweetsAdapeter.notifyDataSetChanged();
-            System.out.println(Integer.toString(mTweets.size()));
-        } //else {
-//        fetchData(true);
+//        List<TweetModel> savedTweets = TweetModel.getAll();
+//        if (savedTweets.size() > 0){
+//            System.out.println(Integer.toString(savedTweets.size())+ " loaded");
+//            mTweets.addAll(savedTweets);
+//            mTweetsAdapeter.notifyDataSetChanged();
+//            System.out.println(Integer.toString(mTweets.size()));
+//        } //else {
+        fetchData(true);
 //        }
 
     }
@@ -130,17 +134,14 @@ public abstract class BaseTimelineFragment extends Fragment implements HomeFragm
             maxId = -1;
         }
 
+        makeRequest(maxId);
+    }
+
+    public void makeRequest(long maxId){
         mClient.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                List<TweetModel> newTweets = TweetModel.fromJSONArray(response);
-                mTweets.addAll(newTweets);
-
-                saveTweets(newTweets);
-
-                mTweetsAdapeter.notifyDataSetChanged();
-                mSwipeContainer.setRefreshing(false);
-                System.out.println("fetched");
+                parseTimelineResponse(response);
             }
 
             @Override
@@ -149,6 +150,18 @@ public abstract class BaseTimelineFragment extends Fragment implements HomeFragm
                 mSwipeContainer.setRefreshing(false);
             }
         }, maxId);
+    }
+
+    public List<TweetModel> parseTimelineResponse(JSONArray response){
+        List<TweetModel> newTweets = TweetModel.fromJSONArray(response);
+        mTweets.addAll(newTweets);
+
+        saveTweets(newTweets);
+
+        mTweetsAdapeter.notifyDataSetChanged();
+        mSwipeContainer.setRefreshing(false);
+
+        return newTweets;
     }
 
     public void saveTweets(List<TweetModel> newTweets){
@@ -163,8 +176,6 @@ public abstract class BaseTimelineFragment extends Fragment implements HomeFragm
         } finally {
             ActiveAndroid.endTransaction();
         }
-
-
     }
 
 }

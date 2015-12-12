@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.codepath.apps.twitterclient.utils.Util;
 import com.codepath.oauth.OAuthBaseClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -32,6 +33,9 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CALLBACK_URL = "oauth://twitterclient"; // Change this (here and in manifest)
 	public static final String HOME_TIMELINE = "statuses/home_timeline.json";
 	public static final String POST_TWEET = "statuses/update.json";
+	public static final String USER_TIMELINE = "statuses/user_timeline.json";
+	public static final String USER_INFO = "account/verify_credentials.json";
+	public static final String TIMELINE_MENTIONS = "statuses/mentions_timeline.json";
 	public static int MAX_TWEET_LENGTH = 140;
 
 	public TwitterClient(Context context) {
@@ -66,6 +70,22 @@ public class TwitterClient extends OAuthBaseClient {
 	}
 
 
+	public void getUserTimeline(JsonHttpResponseHandler handler, String screenName){
+		String apiUrl = getApiUrl(USER_TIMELINE);
+		RequestParams params = new RequestParams();
+		params.put("count", 25);
+		if (screenName != null){
+			params.put("screen_name", screenName);
+		}
+
+		getClient().get(apiUrl,params, handler );
+	}
+
+	public void getUserInfo(AsyncHttpResponseHandler handler){
+		String apiUrl = getApiUrl(USER_INFO);
+		getClient().get(apiUrl, null, handler);
+	}
+
 	public void getHomeTimeline(JsonHttpResponseHandler handler, long max_id){
 		System.out.println("Fetching data");
 		String apiurl = getApiUrl(HOME_TIMELINE);
@@ -77,6 +97,12 @@ public class TwitterClient extends OAuthBaseClient {
 			params.put("max_id", max_id);
 		}
 		getClient().get(apiurl, params, handler);
+	}
+
+	public void getUserMentions(JsonHttpResponseHandler handler, long max_id){
+		String apiUrl = getApiUrl(TIMELINE_MENTIONS);
+		RequestParams params = new RequestParams();
+		getClient().get(apiUrl, params, handler);
 	}
 
 	public boolean postTweet(String tweet, long replyId, JsonHttpResponseHandler handler){

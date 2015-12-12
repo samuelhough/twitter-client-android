@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.activities.DetailTweet;
 import com.codepath.apps.twitterclient.activities.PostActivity;
+import com.codepath.apps.twitterclient.activities.ProfileActivity;
 import com.codepath.apps.twitterclient.models.TweetModel;
 import com.codepath.apps.twitterclient.models.serializers.TweetModelSerializer;
 import com.codepath.apps.twitterclient.utils.Util;
@@ -79,6 +80,16 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
                 holder.itemView.getContext().startActivity(i);
             }
         });
+
+        holder.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(holder.itemView.getContext(), ProfileActivity.class);
+                i.putExtra("screen_name", tweet.getUser().getScreenName());
+                holder.itemView.getContext().startActivity(i);
+            }
+        });
+
     }
 
 

@@ -27,6 +27,26 @@ public class UserModel extends Model implements Serializable {
     @Column(name = "profileImageUrl")
     private String profileImageUrl;
 
+    private String profileBgImageUrl;
+
+    private int followingCount;
+
+    private int followersCount;
+
+    private int tweetCount;
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public int getTweetCount(){
+        return tweetCount;
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
     public String getName() {
         return name;
     }
@@ -43,6 +63,10 @@ public class UserModel extends Model implements Serializable {
         return profileImageUrl;
     }
 
+    public String getProfileBgImageUrl() {
+        return profileBgImageUrl;
+    }
+
     public static UserModel fromJson(JSONObject json){
         UserModel user = new UserModel();
         try {
@@ -50,6 +74,10 @@ public class UserModel extends Model implements Serializable {
             user.uid = json.getLong("id");
             user.screenName = json.getString("screen_name");
             user.profileImageUrl = json.getString("profile_image_url");
+            user.profileBgImageUrl = json.getString("profile_background_image_url");
+            user.followersCount = json.getInt("followers_count");
+            user.followingCount = json.getInt("friends_count");
+            user.tweetCount = json.getInt("statuses_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
